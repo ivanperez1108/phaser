@@ -38,9 +38,8 @@
         this.load.image('star', 'assets/star.png');
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('dude', 
-            'assets/dude.png',
-            //{ frameWidth: 32, frameHeight: 48 }
-            { frameWidth: 32, frameHeight: 42 } //I edited the sprite to have a smaller hitbox
+            'assets/player-spritesheet.png',
+            { frameWidth: 50, frameHeight: 37 }
         );
     }
 
