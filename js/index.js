@@ -7,7 +7,7 @@
             default: 'arcade', //Arcade physics
             arcade: {
                 gravity: { y: 300 }, //Set how powerful gravity is
-                debug: false //Set debug mode, true outlines the game bounds
+                debug: true //Set debug mode, true outlines the game bounds
             }
         },
         parent: 'game', //The id of the parent container
@@ -69,21 +69,14 @@
         
         //Animate the player
         this.anims.create({
-            key: 'left', //The name of the animation
-            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }), //Use the first 4 frames to move left
-            frameRate: 10, //Set the framerate
-            repeat: -1 //Tells Phaser to repeat the animation
+            key: 'idle', //The name of the animation
+            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+            frameRate: 8 //Set the framerate
         });
         
         this.anims.create({
-            key: 'turn', //The name of the animation
-            frames: [ { key: 'dude', frame: 4 } ],
-            frameRate: 20 //Set the framerate
-        });
-        
-        this.anims.create({
-            key: 'right', //The name of the animation
-            frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }), //Use the last 4 frames to move right (Starting at index 5)
+            key: 'run', //The name of the animation
+            frames: this.anims.generateFrameNumbers('dude', { start: 8, end: 10 }),
             frameRate: 10, //Set the framerate
             repeat: -1 //Tells Phaser to repeat the animation
         });
@@ -121,20 +114,20 @@
         if (cursors.left.isDown) //If the left key is pressed
         {
             player.setVelocityX(-160); //Set player velocity to 160 going left.
-        
-            player.anims.play('left', true); //Play the 'left' animation
+            player.anims.play('run', true); //Play the 'left' animation
+            player.flipX = true; //Flip the player
         }
         else if (cursors.right.isDown)
         {
             player.setVelocityX(160); //Set player velocity to 160 going right.
-        
-            player.anims.play('right', true);
+            player.anims.play('run', true);
+            player.flipX = false; //Flip the player
         }
         else
         {
             player.setVelocityX(0); //Set player velocity to 0
         
-            player.anims.play('turn');
+            player.anims.play('idle', true);
         }
         
         if (cursors.up.isDown && player.body.touching.down) //Check if the up key is pressed AND the player is currently on a surface
