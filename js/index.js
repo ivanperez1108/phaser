@@ -6,8 +6,8 @@
         physics: { //Define the type of physics to be used, there is Arcade Physics, Impact Physics, and Matter.js Physics
             default: 'arcade', //Arcade physics
             arcade: {
-                gravity: { y: 300 }, //Set how powerfull gravity is
-                debug: true //Set debug mode, true outlines the game bounds
+                gravity: { y: 300 }, //Set how powerful gravity is
+                debug: false //Set debug mode, true outlines the game bounds
             }
         },
         parent: 'game', //The id of the parent container
@@ -61,22 +61,11 @@
         platforms.create(50, 250, 'ground');
         platforms.create(750, 220, 'ground');
         
-        //Create the stars
-        stars = this.physics.add.group({ //Since we are creating a group and not a static group, these objects are dynamic
-            key: 'star', //Sets the texture key to be the star image
-            repeat: 11, //This 'repeats' the initialization and creates 11 more stars for a total of 12
-            setXY: { x: 12, y: 0, stepX: 70 } //Sets the first star to  12, 0, and every start is 70 pixels to the right from the step (82, 0)
-        });
-        
-        //This goes through all the star children and gives them a round bounce value between 0.4 and 1.0
-        stars.children.iterate(function (child) {
-            child.setBounceY(Phaser.Math.FloatBetween(0.4, 1.0));
-        });
         
         //Create the player
         player = this.physics.add.sprite(100, 450, 'dude');
 
-        player.setBounce(0.2);
+        //player.setBounce(0.2);
         player.setCollideWorldBounds(true);
         
         //Animate the player
@@ -100,8 +89,13 @@
             repeat: -1 //Tells Phaser to repeat the animation
         });
         
-        //Create bombs
+        //Create the stars
+        stars = this.physics.add.group();
+        createStars();
+        
+        //Create first bomb
         bombs = this.physics.add.group();
+        createBomb();
         
         //Create Scoretext
         scoreText = this.add.text(16, 16, 'Score: ' + score, { fontSize: '32px', fill: '#000' }); //Adds the text to position 16, 16
@@ -112,6 +106,9 @@
         this.physics.add.collider(player, platforms); //Adds a collider between the player and any platforms
         this.physics.add.collider(stars, platforms); //Adds a collider between the stars and the platforms
         this.physics.add.collider(bombs, platforms); //Adds a collider between the bombs and the platforms
+        this.physics.add.collider(stars, bombs); //Adds a collider between stars and bombs
+        this.physics.add.collider(stars, stars); //Adds a collider between stars
+        this.physics.add.collider(bombs, bombs); //Adds a collider between bombs
         
         this.physics.add.overlap(player, stars, collectStar, null, this);//Checks if the player and the stars collide, if they do it calls the collectStar function
         this.physics.add.collider(player, bombs, hitBomb, null, this);//Checks if the player and the bombs collide, calls hitBomb if they do
@@ -148,29 +145,48 @@
     }
     
     /**
+     * Creates a random amount of stars giving them random speeds, directions, and bounce
+     */
+    function createStars(){
+        var amountOfStars = Phaser.Math.Between(1,6); //Amount of stars to be created
+        for(var i = 0; i < amountOfStars; i++){
+            var star = stars.create(Phaser.Math.Between(0, 800), 0, 'star'); //Creates a new star
+            star.setBounce(1);
+            star.setCollideWorldBounds(true);
+            star.setVelocity(Phaser.Math.Between(-100, 100), 20); //Sets random speed and direction
+            star.allowGravity = false;
+        }
+    }
+    
+    /**
+     * Creates a single random bomb
+     */
+    function createBomb(){
+        if(bombs.countActive(true) >= 10) //Only allow 10 bombs at once
+            return;
+        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400); //Randomlly Chooses the bombs x position based on where the player currently is
+
+        var bomb = bombs.create(x, 16, 'bomb'); //Creates a new bomb
+        bomb.setBounce(1);
+        bomb.setCollideWorldBounds(true);
+        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20); //Randomlly Set the Speed and direction of the bomb
+        bomb.allowGravity = false; //The bomb is not affected by gravity.
+    }
+    
+    /**
      * This function is called when the player and a star collide.
      */
     function collectStar (player, star)
     {
         score += 10; //Adds 10 points to the score
         scoreText.setText('Score: ' + score); //Set the text to the new score
-        
-        star.disableBody(true, true); //Removes the star from the diplay
+
+        star.destroy(); //Destroys the sprite
         
         if (stars.countActive(true) === 0) //If there are no more stars, release a bomb
         {
-            stars.children.iterate(function (child) { //Loop through all stars and set their positions to their x, 0 and display them again.
-                child.enableBody(true, child.x, 0, true, true);
-            });
-    
-            var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400); //Randomlly Chooses the bombs x position based on where the player currently is
-    
-            var bomb = bombs.create(x, 16, 'bomb'); //Creates a new bomb
-            bomb.setBounce(1);
-            bomb.setCollideWorldBounds(true);
-            bomb.setVelocity(Phaser.Math.Between(-200, 200), 20); //Randomlly Set the Speed and direction of the bomb
-            bomb.allowGravity = false; //The bomb is not affected by gravity.
-    
+            createStars();
+            createBomb();
         }
     }
     
