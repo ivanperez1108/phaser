@@ -7,7 +7,7 @@
             default: 'arcade', //Arcade physics
             arcade: {
                 gravity: { y: 300 }, //Set how powerful gravity is
-                debug: true //Set debug mode, true outlines the game bounds
+                debug: false //Set debug mode, true outlines the game bounds
             }
         },
         parent: 'game', //The id of the parent container
@@ -39,7 +39,7 @@
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('dude', 
             'assets/player-spritesheet.png',
-            { frameWidth: 50, frameHeight: 37 }
+            { frameWidth: 20, frameHeight: 28 }
         );
     }
 
@@ -70,13 +70,13 @@
         //Animate the player
         this.anims.create({
             key: 'idle', //The name of the animation
-            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('dude', { start: 3, end: 5 }),
             frameRate: 8 //Set the framerate
         });
         
         this.anims.create({
             key: 'run', //The name of the animation
-            frames: this.anims.generateFrameNumbers('dude', { start: 8, end: 10 }),
+            frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 2 }),
             frameRate: 10, //Set the framerate
             repeat: -1 //Tells Phaser to repeat the animation
         });
