@@ -39,7 +39,7 @@
         this.load.image('bomb', 'assets/bomb.png');
         this.load.spritesheet('dude', 
             'assets/player-spritesheet.png',
-            { frameWidth: 20, frameHeight: 28 }
+            { frameWidth: 22, frameHeight: 28 }
         );
     }
 
